@@ -1,0 +1,80 @@
+<head>
+    <style>
+        .description {
+            padding: 5px;
+            border-style: solid;
+            border-color: deepskyblue;
+        }
+        div {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+        <!-- Two images at the top of the page -->
+    <div>
+       <!-- <img src="airSupply.jpg" width=500px>-->
+        <!--<img src="CM.jpg" width>-->
+    </div>
+
+    <!-- Left part of the page -->
+    <!-- User infomation -->
+    <!-- Not Implemented yet-->
+    <div float=left>
+
+    </div>
+
+    <!-- Middle part of the page-->
+    <!-- Display all medicine with images and infomation-->
+    <div float=left>
+        <form>
+            {% csrf_token %}
+            Search: <input type="text" name="search" placeholder="not yet done"><br>
+        </form>
+        Weight for the order should be lees than 23.8kg<br>
+        <form action="/asp/clinicmanager/add_order" method="post">
+            {% csrf_token %}
+            <!-- supply_list and image-->
+            {% for medicine in medicinesupply_list %}
+            <div style="width: 30%; float:left ">
+                <div>
+                    <img src= "{{ medicine.image.url }}" >
+                </div>
+                <div class="description">
+                    Detail:<br>
+                    {{ medicine.name }}<br>
+                    {{ medicine.hospital }}<br>
+                    {{ medicine.weight }}<br>
+                    <input type="hidden" name="id{{ forloop.counter }}" value="{{ medicine.id }}">
+                    <input type="hidden" name="name{{ forloop.counter }}" value="{{ medicine.name }}">
+                    <input type="hidden" name="weight{{ forloop.counter }}" value="{{ medicine.weight }}">
+                    <input name="amount{{ forloop.counter }}" type="number" min="0" max="30">
+                </div>
+            </div>
+            {% empty %}
+                No medicine supply.
+            {% endfor %}
+            <br>
+            <!-- Bottom part of the page -->
+            <!-- For user to select the priority and submit the order -->
+            <div style="float: left">
+                Select Priority:
+                <select name="priority">
+                    <option value="3" selected>High</option>
+                    <option value="2">Medium</option>
+                    <option value="1">Low</option>
+                </select>
+            </div>
+
+            <div style="float: right">
+                <input type="submit" value="Order now!" onclick="complete()">
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function complete() {
+            alert("Request received, System is processing...")
+           }
+    </script>
+</body>

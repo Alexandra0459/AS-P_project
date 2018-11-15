@@ -1,0 +1,41 @@
+<!-- image here-->
+<div>
+    <h1>AIR SUPPLY    For dispatchers</h1>
+</div>
+
+<!-- display orders -->
+<div>
+    <ul>
+        <li>
+            <form action="/asp/dispatcher/generate_csv" method="post">
+                {% csrf_token %}
+                <input type="submit" value="Generate CSV">
+            </form>
+            Orders To Go
+        <table>
+            <tr>
+                <th>Priority</th>
+                <th>Address</th>
+                <th>Weight</th>
+                <th>To Dispatch</th>
+            </tr>
+        {% for order in order_list %}
+        <tr>
+            <td>{{ order.priority }}</td>
+            <td>{{ order.location }}</td>
+            <td>{{ order.weight }}</td>
+            <td>
+                <form action="/asp/dispatcher/update_order" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="order" value="{{ order.id }}">
+                    <input type="submit" value="Dispatch">
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+            <tr><td>No order.</td></tr>
+        {% endfor %}
+        </table>
+        </li>
+    </ul>
+</div>

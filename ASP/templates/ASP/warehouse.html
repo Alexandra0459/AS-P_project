@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #wait {
+            text-decoration: underline;
+        }
+        #pack {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div style="width: 100%">
+        <!--
+        <img>
+        -->
+    </div>
+
+    <div id="select">
+        <table>
+            <tr>
+                <td id="wait" onclick="ToQueue()">Manage Orders on Waiting</td>
+                <td id="process" onclick="ToProcess()">Manage Orders on Processing</td>
+            </tr>
+        </table>
+    </div>
+    <div id="queue">
+        <form action="/asp/warehouse/update" method="post">
+            {% csrf_token %}
+            <table>
+                <tr>
+                    <th>Priority</th>
+                    <th>Order Time</th>
+                    <th>Order No.</th>
+                </tr>
+                {% for order in order_list %}
+                    {% if order.status == 'QP' %}
+                    {% if forloop.counter == 1 %}
+                        <input type="hidden" name="order" value="{{ order.id }}">
+                    {% endif %}
+                    <tr>
+                        <td>{{ order.priority }}</td>
+                        <td>{{ order.timeQP }}</td>
+                        <td>{{ order.id }}</td>
+                    </tr>
+                    {% endif %}
+                {% empty %}
+                    <tr><td>No order.</td></tr>
+                {% endfor %}
+            </table>
+            <input type="submit" name="Remove top of order">
+        </form>
+    </div>
+    <div id="pack">
+        <table>
+            <tr>
+                <th>Order No.</th>
+                <th>Status</th>
+                <th>Items</th>
+                <th>RFID</th>
+                <th>Complete Pick and Pack?</th>
+            </tr>
+            {% for order in order_list %}
+                {% if order.status == 'PW' %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>{{ order.items }}</td>
+                    <td>
+                        <form action="/asp/warehouse/generate_rfid" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="order" value="{{ order.id }}">
+                            <input type="submit" value="generate">
+                        </form>
+                    </td>
+                    <td>
+                        <form action="/asp/warehouse/update" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="order" value="{{ order.id }}">
+                            <input type="submit" value="complete">
+                        </form>
+                    </td>
+                </tr>
+                {% endif %}
+            {% empty %}
+                <tr><td>No order.</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+<script>
+    function ToProcess() {
+        document.getElementById("wait").style.textDecoration = "initial";
+        document.getElementById("process").style.textDecoration = "underline";
+        document.getElementById("queue").style.display = "none";
+        document.getElementById("pack").style.display = "block";
+    }
+    function ToQueue() {
+        document.getElementById("process").style.textDecoration = "initial";
+        document.getElementById("wait").style.textDecoration = "underline";
+        document.getElementById("pack").style.display = "none";
+        document.getElementById("queue").style.display = "block";
+    }
+</script>
+</body>
+</html>
